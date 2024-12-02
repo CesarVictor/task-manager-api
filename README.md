@@ -16,7 +16,7 @@ Task Manager API est une application backend en C# qui permet de gérer des tâc
 
 ### Prérequis
 
-- .NET 6.0 ou supérieur
+- .NET 8.0 ou supérieur
 - SQLite
 - Visual Studio ou Visual Studio Code
 
@@ -41,7 +41,7 @@ Exemple dans ``appsettings.json`` :
         }
     }
 
-3. Appliquez les migrations pour créer la base de données SQLite :
+3. Appliquez les migrations pour créer la base de données SQLite (je précise qu'il faut entity framework pour que tout fonctionne pour les migrations etc..) :
 
     ``dotnet ef database update``
 
@@ -65,7 +65,7 @@ Ouvrez un navigateur et rendez-vous à l'adresse suivante : http://localhost:505
     "id": 0,
     "title": "Task Title",
     "description": "Task Description",
-    "status": "todo",
+    "status": "En attente",
     "createdAt": "2024-12-02T20:03:36.323Z",
     "userId": 1,
     "comments": []
@@ -90,7 +90,7 @@ Exemple de body :
   "id": 1,
   "title": "Titre mis à jour",
   "description": "Nouvelle description",
-  "status": "Terminé",
+  "status": "Terminée",
   "userId": 1
 }
 ```
@@ -120,11 +120,30 @@ URL :`` /api/Task/assign/{taskId}/{userId}``
 Réponse :
 ```
 {
-  "message": "Task assigned to user",
+  "$id": "1",
+  "message": "Task assigned successfully",
   "task": {
-    "id": 1,
-    "title": "Nouvelle tâche",
-    "userId": 1
+    "$id": "2",
+    "id": 9,
+    "title": "Titre mis à jour",
+    "description": "Nouvelle description",
+    "status": "Terminée",
+    "createdAt": "2024-12-02T22:11:13.2968575",
+    "userId": 2,
+    "assignedUser": {
+      "$id": "3",
+      "id": 2,
+      "name": "stone",
+      "tasks": {
+        "$id": "4",
+        "$values": [
+          {
+            "$ref": "2"
+          }
+        ]
+      }
+    },
+    "comments": null
   }
 }
 ```
@@ -137,10 +156,55 @@ URL : ``/api/Comments``
 Exemple de body :
 ```
 {
-  "content": "Super tâche à réaliser !",
-  "taskId": 1
+  "id": 0,
+  "content": "string",
+  "taskId": 0,
+  "userId": 0,
+  "createdAt": "2024-12-02T22:13:39.467Z",
 }
 ```
 2. Récupérer les commentaires d'une tâche
 Méthode : GET
 URL : ``/api/Comments/Task/{taskId}``
+
+Reponse : 
+```
+{
+  "$id": "1",
+  "$values": [
+    {
+      "$id": "2",
+      "id": 6,
+      "content": "string",
+      "taskId": 5,
+      "userId": 2,
+      "createdAt": "2024-12-02T21:37:46.648",
+      "user": null
+    },
+    {
+      "$id": "3",
+      "id": 7,
+      "content": "string",
+      "taskId": 5,
+      "userId": 2,
+      "createdAt": "2024-12-02T21:37:46.648",
+      "user": null
+    }
+  ]
+}
+```
+
+3. Ajouter un commentaire
+Méthode : POST
+URL : ``/api/Comments/{id}``
+
+Exemple de body :
+```
+{
+  "id": 0,
+  "content": "string",
+  "taskId": 0,
+  "userId": 0,
+  "createdAt": "2024-12-02T22:13:39.467Z",
+}
+```
